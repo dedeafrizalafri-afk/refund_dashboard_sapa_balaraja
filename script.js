@@ -3,96 +3,41 @@
 // ======================================
 
 const SHEET_URL =
-https://docs.google.com/spreadsheets/d/e/2PACX-1vS169Srv3rdFs6JAfzotcL9qklXPh0AKi6jt-2ROYDlYSKtdDJy2KQ0znqTfHF_IVCtLJjyXXdbnLbm/pub?gid=463015523&single=true&output=csv
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vS169Srv3rdFs6JAfzotcL9qklXPh0AKi6jt-2ROYDlYSKtdDJy2KQ0znqTfHF_IVCtLJjyXXdbnLbm/pub?gid=463015523&single=true&output=csv";
+
 
 let allData = [];
 let chart = null;
 
 
 // ======================================
-// PARSE CSV AMAN
-// ======================================
-
-function parseCSV(text){
-
-    const result = [];
-    let row = [];
-    let value = "";
-    let insideQuote = false;
-
-    for(let i=0;i<text.length;i++){
-
-        let char = text[i];
-
-        if(char === '"'){
-            insideQuote = !insideQuote;
-        }
-        else if(char === "," && !insideQuote){
-
-            row.push(value);
-            value="";
-
-        }
-        else if(char === "\n" && !insideQuote){
-
-            row.push(value);
-            result.push(row);
-
-            row=[];
-            value="";
-
-        }
-        else{
-
-            value += char;
-
-        }
-
-    }
-
-    row.push(value);
-    result.push(row);
-
-    return result;
-
-}
-
-
-
-// ======================================
-// LOAD DATA
+// LOAD DATA GOOGLE SHEET
 // ======================================
 
 async function loadData(){
 
 try{
 
-const response = await fetch(SHEET_URL);
 
-if(!response.ok){
-throw new Error("Google Sheet tidak bisa dibuka");
-}
+const response = await fetch(SHEET_URL);
 
 
 const csv = await response.text();
 
 
-const rows = parseCSV(csv);
-
-
-if(rows.length < 2){
-
-alert("Data Google Sheet kosong");
-
-return;
-
-}
+console.log("CSV DATA:",csv);
 
 
 
-const headers = rows[0].map(x =>
-x.trim().toUpperCase()
-);
+const rows = csv
+.trim()
+.split("\n");
+
+
+
+const headers = rows[0]
+.split(",")
+.map(x=>x.trim().toUpperCase());
 
 
 
@@ -100,22 +45,31 @@ console.log("HEADER:",headers);
 
 
 
-function cariHeader(nama){
+// CARI KOLOM
 
-return headers.findIndex(h =>
-h.includes(nama)
-);
+const idxTanggal = headers.indexOf("TGL ORDER");
+const idxKode = headers.indexOf("KODE TOKO");
+const idxNama = headers.indexOf("NAMA TOKO");
+const idxOrder = headers.indexOf("NO ORDER");
+const idxQty = headers.indexOf("QTY");
+const idxCustomer = headers.indexOf("NAMA CUSTOMER");
+const idxStatus = headers.indexOf("PENANGANAN");
 
-}
 
 
-const idxTanggal = cariHeader("TGL");
-const idxKode = cariHeader("KODE");
-const idxNama = cariHeader("NAMA TOKO");
-const idxOrder = cariHeader("ORDER");
-const idxCustomer = cariHeader("CUSTOMER");
-const idxQty = cariHeader("QTY");
-const idxStatus = cariHeader("PENANGANAN");
+console.log({
+
+tanggal:idxTanggal,
+kode:idxKode,
+nama:idxNama,
+order:idxOrder,
+qty:idxQty,
+customer:idxCustomer,
+status:idxStatus
+
+});
+
+
 
 
 
@@ -126,10 +80,11 @@ allData=[];
 for(let i=1;i<rows.length;i++){
 
 
-let col = rows[i];
+const col = rows[i].split(",");
 
 
-if(col.length < 3) continue;
+
+if(col.length < 5) continue;
 
 
 
@@ -143,13 +98,15 @@ nama: col[idxNama] || "",
 
 order: col[idxOrder] || "",
 
-customer: col[idxCustomer] || "",
-
 qty: Number(col[idxQty]) || 0,
+
+customer: col[idxCustomer] || "",
 
 status: col[idxStatus] || ""
 
+
 });
+
 
 
 }
@@ -167,6 +124,7 @@ filterData();
 
 
 }
+
 catch(error){
 
 console.error(error);
@@ -180,25 +138,36 @@ alert("Gagal mengambil data Google Sheet");
 
 
 
+
+
 // ======================================
-// FILTER TOKO
+// DROPDOWN TOKO
 // ======================================
 
+
 function isiFilterToko(){
+
 
 const select =
 document.getElementById("filterToko");
 
 
-let toko =
-[...new Set(allData.map(x=>x.kode))]
-.filter(x=>x)
-.sort();
-
-
 
 select.innerHTML =
-`<option value="">Semua Toko</option>`;
+`
+<option value="">
+Semua Toko
+</option>
+`;
+
+
+
+const toko = [
+...new Set(
+allData.map(x=>x.kode)
+)
+];
+
 
 
 toko.forEach(t=>{
@@ -224,9 +193,11 @@ select.appendChild(option);
 
 
 
+
 // ======================================
-// FILTER DATA
+// FILTER & DASHBOARD
 // ======================================
+
 
 function filterData(){
 
@@ -234,7 +205,8 @@ function filterData(){
 let data=[...allData];
 
 
-let toko =
+
+const toko =
 document.getElementById("filterToko").value;
 
 
@@ -249,12 +221,21 @@ data.filter(x=>x.kode===toko);
 
 
 
-let pending =
-data.length;
+
+const totalPending =
+data.filter(x=>
+
+x.status
+.toUpperCase()
+.includes("PENDING")
+
+).length;
 
 
 
-let refund =
+
+
+const totalRefund =
 data.filter(x=>
 
 x.status
@@ -266,38 +247,59 @@ x.status
 
 
 
-let qty =
-data.reduce((a,b)=>a+b.qty,0);
+
+const totalQty =
+data.reduce(
+(a,b)=>a+b.qty,
+0
+);
 
 
 
-let tokoJumlah =
-new Set(data.map(x=>x.kode)).size;
+
+
+const totalToko =
+new Set(
+data.map(x=>x.kode)
+).size;
 
 
 
-document.getElementById("pending").innerHTML=pending;
-
-document.getElementById("refund").innerHTML=refund;
-
-document.getElementById("qty").innerHTML=qty;
-
-document.getElementById("toko").innerHTML=tokoJumlah;
 
 
+document.getElementById("pending").innerHTML =
+totalPending;
 
-document.getElementById("lastUpdate").innerHTML=
 
+document.getElementById("refund").innerHTML =
+totalRefund;
+
+
+document.getElementById("qty").innerHTML =
+totalQty;
+
+
+document.getElementById("toko").innerHTML =
+totalToko;
+
+
+
+
+
+document.getElementById("lastUpdate").innerHTML =
 "Last Update : "+
 new Date().toLocaleString("id-ID");
 
 
 
 
-// TABLE
+
+// ======================================
+// TABEL
+// ======================================
 
 
-let tbody =
+const tbody =
 document.querySelector("#dataTable tbody");
 
 
@@ -308,7 +310,8 @@ tbody.innerHTML="";
 data.forEach(item=>{
 
 
-tbody.innerHTML += `
+tbody.innerHTML +=
+`
 
 <tr>
 
@@ -336,11 +339,16 @@ tbody.innerHTML += `
 
 
 
-// CHART
 
 
-let ctx =
+// ======================================
+// GRAFIK
+// ======================================
+
+
+const ctx =
 document.getElementById("myChart");
+
 
 
 if(chart){
@@ -355,25 +363,34 @@ chart = new Chart(ctx,{
 
 type:"bar",
 
+
 data:{
 
+
 labels:[
+
 "Pending",
 "Refund"
+
 ],
+
 
 datasets:[{
 
 label:"Jumlah",
 
 data:[
-pending,
-refund
+
+totalPending,
+totalRefund
+
 ]
 
 }]
 
+
 },
+
 
 options:{
 
@@ -385,32 +402,24 @@ responsive:true
 });
 
 
+
 }
 
 
 
+
+
 // ======================================
-// EVENT
+// SEARCH
 // ======================================
-
-document
-.getElementById("btnFilter")
-.onclick=filterData;
-
-
-
-document
-.getElementById("filterToko")
-.onchange=filterData;
-
 
 
 document
 .getElementById("searchInput")
-.onkeyup=function(){
+.addEventListener("keyup",function(){
 
 
-let key =
+let keyword =
 this.value.toLowerCase();
 
 
@@ -423,17 +432,46 @@ document
 row.style.display =
 row.innerText
 .toLowerCase()
-.includes(key)
+.includes(keyword)
+
 ?
+
 ""
+
 :
+
 "none";
 
 
 });
 
 
-};
+});
+
+
+
+
+
+
+// ======================================
+// EVENT
+// ======================================
+
+
+document
+.getElementById("btnFilter")
+.onclick =
+filterData;
+
+
+
+document
+.getElementById("filterToko")
+.onchange =
+filterData;
+
+
+
 
 
 
@@ -442,15 +480,19 @@ row.innerText
 // MENU
 // ======================================
 
+
 document
 .getElementById("btnDashboard")
 .onclick=function(){
 
-dashboardPage.style.display="block";
 
-dataPage.style.display="none";
+document.getElementById("dashboardPage").style.display="block";
+
+document.getElementById("dataPage").style.display="none";
+
 
 };
+
 
 
 
@@ -458,16 +500,21 @@ document
 .getElementById("btnData")
 .onclick=function(){
 
-dashboardPage.style.display="none";
 
-dataPage.style.display="block";
+document.getElementById("dashboardPage").style.display="none";
+
+document.getElementById("dataPage").style.display="block";
+
 
 };
+
+
 
 
 
 // ======================================
 // START
 // ======================================
+
 
 loadData();
