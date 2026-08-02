@@ -3,7 +3,7 @@
 // GANTI DENGAN URL WEB APP KAMU
 // =============================
 
-const API_URL = "MASUKKAN_URL_APPS_SCRIPT_DISINI";
+const API_URL = "https://docs.google.com/spreadsheets/d/e/2pacx-1vs169srv3rdfs6jafzotcl9qklxph0aki6jt-2roydlysktddjy2kq0znqtfhf_ivctljjyxxdbnlbm/pub?gid=463015523&single=true&output=csv ;);";
 
 
 let allData = [];
