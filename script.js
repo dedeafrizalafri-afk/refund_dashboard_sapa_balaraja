@@ -35,7 +35,7 @@ fetch("pendingan.csv")
     document.getElementById("qty").textContent = totalQty;
     document.getElementById("toko").textContent = toko.size;
   })
-  ;const ctx = document.getElementById('myChart');
+  const ctx = document.getElementById('myChart');
 
 new Chart(ctx, {
   type: 'bar',
@@ -43,7 +43,7 @@ new Chart(ctx, {
     labels: ['Pending', 'Refund'],
     datasets: [{
       label: 'Jumlah',
-      data: [pending, refund],
+   data: [totalPending, totalRefund],
       backgroundColor: [
         '#f59e0b',
         '#10b981'
