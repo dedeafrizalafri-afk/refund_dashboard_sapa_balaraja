@@ -34,7 +34,8 @@ fetch("pendingan.csv")
     document.getElementById("refund").textContent = totalRefund;
     document.getElementById("qty").textContent = totalQty;
     document.getElementById("toko").textContent = toko.size;
-  });const ctx = document.getElementById('myChart');
+  })
+  ;const ctx = document.getElementById('myChart');
 
 new Chart(ctx, {
   type: 'bar',
