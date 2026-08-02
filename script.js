@@ -205,7 +205,7 @@ function isiFilterToko() {
 
     });
 
-
+}
 
 // =====================================
 // FILTER DATA
@@ -288,8 +288,6 @@ if (dari || sampai) {
     });
 
 }
-
-    }
 
     // ==========================
     // HITUNG DASHBOARD
