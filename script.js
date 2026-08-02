@@ -31,6 +31,11 @@ if (filterTanggal) {
       if (cols[kodeIndex]) {
         toko.add(cols[kodeIndex].trim());
       }
+      const filterToko = document.getElementById("filterToko").value;
+
+if (filterToko && cols[kodeIndex].trim() !== filterToko) {
+    continue;
+}
 
       totalQty += Number(cols[qtyIndex]) || 0;
 
