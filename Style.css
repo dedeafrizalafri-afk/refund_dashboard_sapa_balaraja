@@ -1,218 +1,374 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:'Poppins',sans-serif;
+}
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+body{
+    background:#f5f7fb;
+    color:#333;
+}
 
-<title>Refund Dashboard SAPA BALARAJA</title>
 
-<link rel="stylesheet" href="style.css">
+/* SIDEBAR */
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+.sidebar{
+    position:fixed;
+    width:240px;
+    height:100vh;
+    background:#0f172a;
+    padding:25px 15px;
+    color:white;
+}
 
-</head>
 
-<body>
+.logo{
+    text-align:center;
+    margin-bottom:30px;
+}
 
-<!-- SIDEBAR -->
-<div class="sidebar">
+.logo h2{
+    font-size:32px;
+    color:#facc15;
+}
 
-    <div class="logo">
-        <h2>SAPA</h2>
-        <p>Refund Dashboard</p>
-    </div>
+.logo p{
+    font-size:14px;
+}
 
-    <button id="btnDashboard" class="menu active">
-        📊 Dashboard
-    </button>
 
-    <button id="btnData" class="menu">
-        📋 Data Pending
-    </button>
+.menu{
 
-</div>
+    width:100%;
+    padding:14px;
+    margin-bottom:10px;
 
+    border:none;
+    border-radius:10px;
 
-<!-- CONTENT -->
-<div class="content">
+    background:#1e293b;
+    color:white;
 
-<header>
-    <h1>Refund Dashboard SAPA BALARAJA</h1>
-    <p id="lastUpdate">Last Update : -</p>
-</header>
+    cursor:pointer;
 
+    font-size:15px;
 
-<!-- DASHBOARD -->
-<section id="dashboardPage">
+    text-align:left;
+}
 
-<div class="cards">
 
-    <div class="card">
-        <div class="icon">📦</div>
-        <span>Total Pending</span>
-        <h2 id="pending">0</h2>
-    </div>
+.menu:hover,
+.menu.active{
 
+    background:#facc15;
+    color:#111827;
 
-    <div class="card">
-        <div class="icon">💰</div>
-        <span>Total Refund</span>
-        <h2 id="refund">0</h2>
-    </div>
+}
 
 
-    <div class="card">
-        <div class="icon">📊</div>
-        <span>Total Qty</span>
-        <h2 id="qty">0</h2>
-    </div>
 
+/* CONTENT */
 
-    <div class="card">
-        <div class="icon">🏪</div>
-        <span>Total Toko</span>
-        <h2 id="toko">0</h2>
-    </div>
+.content{
 
-</div>
+    margin-left:240px;
+    padding:30px;
 
+}
 
-<div class="chart-card">
 
-<h3>
-Grafik Pending • Refund • Kirim Ulang
-</h3>
 
-<canvas id="myChart"></canvas>
+header{
 
-</div>
+    background:white;
 
+    padding:20px;
 
-</section>
+    border-radius:15px;
 
+    margin-bottom:25px;
 
+    box-shadow:0 5px 15px rgba(0,0,0,.05);
 
-<!-- DATA -->
-<section id="dataPage" style="display:none;">
+}
 
-<div class="table-card">
 
-<h2>Data Pending Refund</h2>
+header h1{
 
+    font-size:26px;
 
-<div class="filter-box">
+}
 
 
-<div>
-<label>Dari Tanggal</label>
-<input type="date" id="filterDari">
-</div>
 
+/* CARD */
 
-<div>
-<label>Sampai Tanggal</label>
-<input type="date" id="filterSampai">
-</div>
+.cards{
 
+    display:grid;
 
-<div>
-<label>Kode Toko</label>
+    grid-template-columns:repeat(4,1fr);
 
-<select id="filterToko">
+    gap:20px;
 
-<option value="">
-Semua Toko
-</option>
+}
 
-</select>
 
-</div>
 
+.card{
 
-<div>
-<label>Status</label>
+    background:white;
 
-<select id="filterStatus">
+    padding:20px;
 
-<option value="">
-Semua Status
-</option>
+    border-radius:18px;
 
-<option value="PENDING">
-Pending
-</option>
+    display:flex;
 
-<option value="REFUND">
-Refund
-</option>
+    align-items:center;
 
-<option value="KIRIM ULANG">
-Kirim Ulang
-</option>
+    gap:15px;
 
-</select>
+    box-shadow:0 5px 15px rgba(0,0,0,.05);
 
-</div>
+}
 
 
-<button id="btnFilter">
-Filter
-</button>
 
+.icon{
 
-</div>
+    font-size:35px;
 
+}
 
 
-<input 
-type="text"
-id="searchInput"
-placeholder="🔍 Cari No Order, Customer atau Toko">
 
+.card span{
 
+    color:#64748b;
 
-<div class="table-wrapper">
+}
 
-<table id="dataTable">
 
-<thead>
 
-<tr>
+.card h2{
 
-<th>Tanggal</th>
-<th>Kode Toko</th>
-<th>Nama Toko</th>
-<th>No Order</th>
-<th>Nama Customer</th>
-<th>Qty</th>
-<th>Status</th>
+    font-size:32px;
 
-</tr>
+    margin-top:5px;
 
-</thead>
+}
 
 
-<tbody>
 
-</tbody>
 
+/* CHART */
 
-</table>
+.chart-card{
 
-</div>
+    background:white;
 
+    margin-top:25px;
 
-</div>
+    padding:25px;
 
+    border-radius:18px;
 
-</section>
+    height:350px;
 
+}
 
-</div>
 
 
-<script src="script.js"></script>
+/* TABLE */
 
-</body>
-</html>
+.table-card{
+
+    background:white;
+
+    padding:25px;
+
+    border-radius:18px;
+
+}
+
+
+.filter-box{
+
+    display:flex;
+
+    gap:15px;
+
+    flex-wrap:wrap;
+
+    margin:20px 0;
+
+}
+
+
+
+.filter-item{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:5px;
+
+}
+
+
+
+input,
+select,
+button{
+
+    padding:10px;
+
+    border-radius:8px;
+
+    border:1px solid #ddd;
+
+}
+
+
+button{
+
+    background:#facc15;
+
+    cursor:pointer;
+
+    font-weight:bold;
+
+}
+
+
+
+/* SEARCH */
+
+#searchInput{
+
+    width:100%;
+
+    margin-bottom:20px;
+
+}
+
+
+
+/* TABLE */
+
+.table-wrapper{
+
+    overflow:auto;
+
+}
+
+
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+
+
+thead{
+
+    background:#0f172a;
+
+    color:white;
+
+}
+
+
+th,
+td{
+
+    padding:12px;
+
+    border-bottom:1px solid #ddd;
+
+    text-align:left;
+
+}
+
+
+
+tbody tr:hover{
+
+    background:#f8fafc;
+
+}
+
+
+
+/* STATUS */
+
+.status-refund{
+
+    background:#dcfce7;
+
+    color:#166534;
+
+    padding:5px 10px;
+
+    border-radius:20px;
+
+}
+
+
+
+.status-pending{
+
+    background:#fef3c7;
+
+    color:#92400e;
+
+    padding:5px 10px;
+
+    border-radius:20px;
+
+}
+
+
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+.sidebar{
+
+    width:80px;
+
+}
+
+
+.logo p,
+.menu{
+
+    font-size:0;
+
+}
+
+
+.content{
+
+    margin-left:80px;
+
+}
+
+
+
+.cards{
+
+    grid-template-columns:1fr;
+
+}
+
+
+}
