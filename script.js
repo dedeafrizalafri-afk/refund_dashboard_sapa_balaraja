@@ -1,152 +1,154 @@
 // ===============================
-// GOOGLE SHEETS URL
+// REFUND DASHBOARD SAPA BALARAJA
 // ===============================
 
-const sheetURL =
+const SHEET_URL =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vS169Srv3rdFs6JAfzotcL9qklXPh0AKi6jt-2ROYDlYSKtdDJy2KQ0znqTfHF_IVCtLJjyXXdbnLbm/pub?gid=463015523&single=true&output=csv";
 
-let chart;
+let chart = null;
+let allData = [];
 
 // ===============================
 // LOAD DATA
 // ===============================
 
-function loadData(){
+async function loadData(){
 
-fetch(sheetURL)
+const response = await fetch(SHEET_URL);
 
-.then(res=>res.text())
+const csv = await response.text();
 
-.then(text=>{
+const rows = csv.trim().split("\n");
 
-const rows=text.trim().split("\n");
-
-const headers=rows[0].split(",");
+const headers = rows[0].split(",");
 
 // ===============================
 // INDEX KOLOM
 // ===============================
 
-const tanggalIndex=headers.indexOf("TGL ORDER");
-const kodeIndex=headers.indexOf("KODE TOKO");
-const namaIndex=headers.indexOf("NAMA TOKO");
-const orderIndex=headers.indexOf("NO ORDER");
-const customerIndex=headers.indexOf("CUSTOMER");
-const qtyIndex=headers.indexOf("QTY");
-const penangananIndex=headers.indexOf("PENANGANAN");
+const tanggalIndex = headers.indexOf("TGL ORDER");
+const kodeIndex = headers.indexOf("KODE TOKO");
+const namaIndex = headers.indexOf("NAMA TOKO");
+const orderIndex = headers.indexOf("NO ORDER");
+const customerIndex = headers.indexOf("NAMA CUSTOMER");
+const qtyIndex = headers.indexOf("QTY");
+const penangananIndex = headers.indexOf("PENANGANAN");
+
+// kosongkan data lama
+
+allData=[];
 
 // ===============================
-// FILTER
-// ===============================
-
-const filterTanggal=document.getElementById("filterTanggal").value;
-
-const filterToko=document.getElementById("filterToko").value;
-
-// ===============================
-// VARIABLE
-// ===============================
-
-let totalPending=0;
-let totalRefund=0;
-let totalQty=0;
-
-const daftarToko=new Set();
-
-const tbody=document.querySelector("#dataTable tbody");
-
-tbody.innerHTML="";
-
-// ===============================
-// ISI DROPDOWN TOKO
+// UBAH CSV MENJADI OBJECT
 // ===============================
 
 for(let i=1;i<rows.length;i++){
 
-const cols=rows[i].split(",");
+const cols = rows[i].split(",");
 
-if(cols[kodeIndex]){
+allData.push({
 
-daftarToko.add(cols[kodeIndex].trim());
+tanggal: cols[tanggalIndex],
 
-}
+kode: cols[kodeIndex],
 
-}
+nama: cols[namaIndex],
 
-const select=document.getElementById("filterToko");
+order: cols[orderIndex],
 
-select.innerHTML="<option value=''>Semua Toko</option>";
+customer: cols[customerIndex],
 
-Array.from(daftarToko)
-.sort()
-.forEach(toko=>{
+qty: Number(cols[qtyIndex])||0,
 
-const option=document.createElement("option");
-
-option.value=toko;
-
-option.textContent=toko;
-
-if(filterToko==toko){
-
-option.selected=true;
-
-}
-
-select.appendChild(option);
+status: cols[penangananIndex]
 
 });
 
+}
+
+// lanjut ke filter
+
+filterData();
+
+}
+
 // ===============================
-// MULAI LOOP DATA
+// FILTER DATA
 // ===============================
 
-for(let i=1;i<rows.length;i++){
+function filterData(){
 
-const cols=rows[i].split(",");
+const dari=document.getElementById("filterDari").value;
+
+const sampai=document.getElementById("filterSampai").value;
+
+const toko=document.getElementById("filterToko").value;
+
+let hasil=[...allData];
 
 // ===============================
 // FILTER TANGGAL
 // ===============================
 
-if(filterTanggal){
+if(dari!=""){
 
-let tgl = cols[tanggalIndex].trim();
+hasil=hasil.filter(item=>{
 
-if(tgl){
-
-let p = tgl.split("-");
-
-if(p.length==3){
+const p=item.tanggal.split("-");
 
 const bulan={
-jan:"01",
-feb:"02",
-mar:"03",
-apr:"04",
-may:"05",
-jun:"06",
-jul:"07",
-aug:"08",
-sep:"09",
-oct:"10",
-nov:"11",
-dec:"12"
+Jan:"01",
+Feb:"02",
+Mar:"03",
+Apr:"04",
+May:"05",
+Jun:"06",
+Jul:"07",
+Aug:"08",
+Sep:"09",
+Oct:"10",
+Nov:"11",
+Dec:"12"
 };
 
-let tanggal=p[0].padStart(2,"0");
-let bulanAngka=bulan[p[1].toLowerCase()];
-let tahun=p[2];
+const tgl=
 
-let hasil=`${tahun}-${bulanAngka}-${tanggal}`;
+p[2]+"-"+bulan[p[1]]+"-"+p[0].padStart(2,"0");
 
-if(hasil!==filterTanggal){
-continue;
-}
+return tgl>=dari;
+
+});
 
 }
 
-}
+if(sampai!=""){
+
+hasil=hasil.filter(item=>{
+
+const p=item.tanggal.split("-");
+
+const bulan={
+Jan:"01",
+Feb:"02",
+Mar:"03",
+Apr:"04",
+May:"05",
+Jun:"06",
+Jul:"07",
+Aug:"08",
+Sep:"09",
+Oct:"10",
+Nov:"11",
+Dec:"12"
+};
+
+const tgl=
+
+p[2]+"-"+bulan[p[1]]+"-"+p[0].padStart(2,"0");
+
+return tgl<=sampai;
+
+});
 
 }
 
@@ -154,72 +156,89 @@ continue;
 // FILTER TOKO
 // ===============================
 
-if(filterToko!=""){
+if(toko!=""){
 
-if(cols[kodeIndex].trim()!=filterToko){
-
-continue;
+hasil=hasil.filter(item=>item.kode==toko);
 
 }
 
-}
+// ===============================
+// DROPDOWN TOKO
+// ===============================
+
+const select = document.getElementById("filterToko");
+const tokoList = [...new Set(allData.map(x => x.kode).filter(Boolean))].sort();
+
+const tokoTerpilih = select.value;
+
+select.innerHTML = '<option value="">Semua Toko</option>';
+
+tokoList.forEach(kode => {
+    const option = document.createElement("option");
+    option.value = kode;
+    option.textContent = kode;
+
+    if (kode === tokoTerpilih) {
+        option.selected = true;
+    }
+
+    select.appendChild(option);
+});
 
 // ===============================
 // HITUNG DASHBOARD
 // ===============================
 
-totalPending++;
+const totalPending = hasil.length;
 
-totalQty += Number(cols[qtyIndex]) || 0;
+const totalRefund = hasil.filter(item =>
+    item.status &&
+    item.status.trim().toUpperCase() === "REFUND"
+).length;
 
-if(
-cols[penangananIndex] &&
-cols[penangananIndex].trim().toUpperCase()=="REFUND"
-){
+const totalQty = hasil.reduce((a, b) => a + b.qty, 0);
 
-totalRefund++;
+const totalToko = new Set(hasil.map(item => item.kode)).size;
 
-}
+document.getElementById("pending").textContent = totalPending;
+document.getElementById("refund").textContent = totalRefund;
+document.getElementById("qty").textContent = totalQty;
+document.getElementById("toko").textContent = totalToko;
+
+document.getElementById("lastUpdate").textContent =
+"Last Update : " + new Date().toLocaleString("id-ID");
 
 // ===============================
 // TABEL
 // ===============================
 
-const tr=document.createElement("tr");
+const tbody = document.querySelector("#dataTable tbody");
 
-tr.innerHTML=`
+tbody.innerHTML = "";
 
-<td>${cols[tanggalIndex]}</td>
+hasil.forEach(item => {
 
-<td>${cols[kodeIndex]}</td>
+    const tr = document.createElement("tr");
 
-<td>${cols[namaIndex]}</td>
+    const badge =
+        item.status &&
+        item.status.trim().toUpperCase() === "REFUND"
+        ? '<span class="status-refund">REFUND</span>'
+        : '<span class="status-pending">PENDING</span>';
 
-<td>${cols[orderIndex]}</td>
+    tr.innerHTML = `
+        <td>${item.tanggal}</td>
+        <td>${item.kode}</td>
+        <td>${item.nama}</td>
+        <td>${item.order}</td>
+        <td>${item.customer}</td>
+        <td>${item.qty}</td>
+        <td>${badge}</td>
+    `;
 
-<td>${cols[customerIndex]}</td>
+    tbody.appendChild(tr);
 
-<td>${cols[qtyIndex]}</td>
-
-<td>${cols[penangananIndex]}</td>
-
-`;
-
-tbody.appendChild(tr);
-
-}
-
-// ===============================
-// UPDATE CARD
-// ===============================
-
-document.getElementById("pending").textContent=totalPending;
-
-document.getElementById("refund").textContent=totalRefund;
-
-document.getElementById("qty").textContent=totalQty;
-
-document.getElementById("toko").textContent=daftarToko.size;
+});
 
 // ===============================
 // GRAFIK
@@ -232,46 +251,48 @@ if (chart) {
 }
 
 chart = new Chart(ctx, {
+
     type: "bar",
+
     data: {
+
         labels: ["Pending", "Refund"],
+
         datasets: [{
-            label: "Jumlah",
+
             data: [totalPending, totalRefund],
+
             backgroundColor: [
                 "#f59e0b",
                 "#10b981"
             ],
-            borderRadius: 8
+
+            borderRadius: 10
+
         }]
+
     },
+
     options: {
+
         responsive: true,
+
         plugins: {
+
             legend: {
+
                 display: false
+
             }
+
         }
+
     }
+
 });
 
-}); // selesai fetch
-} // selesai function loadData()
-
 // ===============================
-// LOAD PERTAMA
-// ===============================
-
-loadData();
-
-// ===============================
-// TOMBOL FILTER
-// ===============================
-
-document.getElementById("btnFilter").addEventListener("click", loadData);
-
-// ===============================
-// SEARCH TABEL
+// SEARCH
 // ===============================
 
 document.getElementById("searchInput").addEventListener("keyup", function () {
@@ -289,28 +310,59 @@ document.getElementById("searchInput").addEventListener("keyup", function () {
 });
 
 // ===============================
-// MENU DASHBOARD
+// FILTER BUTTON
+// ===============================
+
+document.getElementById("btnFilter").addEventListener("click", function(){
+
+    filterData();
+
+});
+
+// ===============================
+// MENU
 // ===============================
 
 const btnDashboard = document.getElementById("btnDashboard");
+
 const btnData = document.getElementById("btnData");
 
-btnDashboard.addEventListener("click", function () {
+btnDashboard.onclick=function(){
 
-    document.getElementById("dashboardPage").style.display = "block";
-    document.getElementById("dataPage").style.display = "none";
+    document.getElementById("dashboardPage").style.display="block";
+
+    document.getElementById("dataPage").style.display="none";
 
     btnDashboard.classList.add("active");
+
     btnData.classList.remove("active");
 
-});
+}
 
-btnData.addEventListener("click", function () {
+btnData.onclick=function(){
 
-    document.getElementById("dashboardPage").style.display = "none";
-    document.getElementById("dataPage").style.display = "block";
+    document.getElementById("dashboardPage").style.display="none";
+
+    document.getElementById("dataPage").style.display="block";
 
     btnData.classList.add("active");
+
     btnDashboard.classList.remove("active");
 
-});
+}
+
+// ===============================
+// FILTER OTOMATIS
+// ===============================
+
+document.getElementById("filterDari").addEventListener("change",filterData);
+
+document.getElementById("filterSampai").addEventListener("change",filterData);
+
+document.getElementById("filterToko").addEventListener("change",filterData);
+
+// ===============================
+// LOAD PERTAMA
+// ===============================
+
+loadData();
