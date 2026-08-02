@@ -39,3 +39,42 @@ body{
     color:#2563eb;
     margin:10px 0;
 }
+.filter-box{
+    display:flex;
+    gap:15px;
+    align-items:end;
+    margin:20px 0;
+    flex-wrap:wrap;
+}
+
+.filter-item{
+    display:flex;
+    flex-direction:column;
+}
+
+.filter-item label{
+    font-size:14px;
+    font-weight:bold;
+    margin-bottom:5px;
+}
+
+.filter-item input,
+.filter-item select{
+    padding:10px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    min-width:180px;
+}
+
+#btnFilter{
+    background:#2563eb;
+    color:white;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+#btnFilter:hover{
+    background:#1d4ed8;
+}
