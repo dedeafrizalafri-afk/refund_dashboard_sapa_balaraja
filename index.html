@@ -1,56 +1,65 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Refund Dashboard SAPA BALARAJA</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
+
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <link rel="stylesheet" href="style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 
 <body>
 
+<!-- SIDEBAR -->
+
 <div class="sidebar">
 
-    <div class="logo">
-        <h2>SAPA</h2>
-        <span>Refund Dashboard</span>
-    </div>
+<div class="logo">
 
-    <button class="menu active" id="btnDashboard">
-        📊 Dashboard
-    </button>
+<h2>SAPA</h2>
 
-    <button class="menu" id="btnData">
-        📋 Data Pending
-    </button>
+<p>Refund Dashboard</p>
 
 </div>
+
+<button id="btnDashboard" class="menu active">
+
+📊 Dashboard
+
+</button>
+
+<button id="btnData" class="menu">
+
+📋 Data Pending
+
+</button>
+
+</div>
+
+<!-- MAIN -->
 
 <div class="main">
 
 <header>
 
-<div>
-
 <h1>Refund Dashboard SAPA BALARAJA</h1>
 
-<p>Monitoring Pending Refund Otomatis Google Sheets</p>
-
-</div>
+<p id="lastUpdate">Last Update : -</p>
 
 </header>
 
-<!-- ================= DASHBOARD ================= -->
+<!-- DASHBOARD -->
 
 <section id="dashboardPage">
 
@@ -62,7 +71,7 @@
 
 <div>
 
-<h3>Total Pending</h3>
+<span>Total Pending</span>
 
 <h2 id="pending">0</h2>
 
@@ -76,7 +85,7 @@
 
 <div>
 
-<h3>Total Refund</h3>
+<span>Total Refund</span>
 
 <h2 id="refund">0</h2>
 
@@ -90,7 +99,7 @@
 
 <div>
 
-<h3>Total Qty</h3>
+<span>Total Qty</span>
 
 <h2 id="qty">0</h2>
 
@@ -104,7 +113,7 @@
 
 <div>
 
-<h3>Total Toko</h3>
+<span>Total Toko</span>
 
 <h2 id="toko">0</h2>
 
@@ -114,7 +123,7 @@
 
 </div>
 
-<div class="chart-card">
+<div class="chart-box">
 
 <h3>Grafik Pending vs Refund</h3>
 
@@ -124,11 +133,11 @@
 
 </section>
 
-<!-- ================= DATA ================= -->
+<!-- DATA -->
 
 <section id="dataPage" style="display:none;">
 
-<div class="table-card">
+<div class="table-box">
 
 <h2>Data Pending Refund</h2>
 
@@ -136,9 +145,17 @@
 
 <div>
 
-<label>Tanggal</label>
+<label>Dari Tanggal</label>
 
-<input type="date" id="filterTanggal">
+<input type="date" id="filterDari">
+
+</div>
+
+<div>
+
+<label>Sampai Tanggal</label>
+
+<input type="date" id="filterSampai">
 
 </div>
 
@@ -159,7 +176,9 @@
 <label>&nbsp;</label>
 
 <button id="btnFilter">
+
 Filter
+
 </button>
 
 </div>
@@ -169,7 +188,7 @@ Filter
 <input
 type="text"
 id="searchInput"
-placeholder="🔍 Cari No Order / Customer / Toko">
+placeholder="Cari No Order / Customer / Toko">
 
 <div class="table-responsive">
 
@@ -181,7 +200,7 @@ placeholder="🔍 Cari No Order / Customer / Toko">
 
 <th>Tanggal</th>
 
-<th>Kode Toko</th>
+<th>Kode</th>
 
 <th>Nama Toko</th>
 
