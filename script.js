@@ -3,7 +3,6 @@ fetch("pendingan.csv")
   .then(text => {
     const rows = text.trim().split("\n");
 
-    // Header
     const headers = rows[0].split(",");
 
     const kodeIndex = headers.indexOf("KODE TOKO");
@@ -24,8 +23,10 @@ fetch("pendingan.csv")
 
       totalQty += Number(cols[qtyIndex]) || 0;
 
-      if (cols[penangananIndex] &&
-          cols[penangananIndex].trim().toUpperCase() === "REFUND") {
+      if (
+        cols[penangananIndex] &&
+        cols[penangananIndex].trim().toUpperCase() === "REFUND"
+      ) {
         totalRefund++;
       }
     }
@@ -34,29 +35,26 @@ fetch("pendingan.csv")
     document.getElementById("refund").textContent = totalRefund;
     document.getElementById("qty").textContent = totalQty;
     document.getElementById("toko").textContent = toko.size;
-  
-  const ctx = document.getElementById('myChart');
 
-new Chart(ctx, {
-  type: 'bar',
-  data: {
-    labels: ['Pending', 'Refund'],
-    datasets: [{
-      label: 'Jumlah',
-   data: [totalPending, totalRefund],
-      backgroundColor: [
-        '#f59e0b',
-        '#10b981'
-      ]
-    }]
-  },
-  options: {
-    responsive: true,
-    plugins: {
-      legend: {
-        display: false
+    const ctx = document.getElementById("myChart");
+
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["Pending", "Refund"],
+        datasets: [{
+          label: "Jumlah",
+          data: [totalPending, totalRefund],
+          backgroundColor: ["#f59e0b", "#10b981"]
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
       }
-    }
-  }
-});
-});
+    });
+  });
