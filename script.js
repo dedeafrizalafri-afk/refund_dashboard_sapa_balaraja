@@ -1,4 +1,4 @@
-fetch("pendingan.csv")
+fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vS169Srv3rdFs6JAfzotcL9qklXPh0AKi6jt-2ROYDlYSKtdDJy2KQ0znqTfHF_IVCtLJjyXXdbnLbm/pub?gid=463015523&single=true&output=csv")
   .then(res => res.text())
   .then(text => {
     const rows = text.trim().split("\n");
