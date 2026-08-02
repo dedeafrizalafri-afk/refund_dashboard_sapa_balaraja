@@ -8,10 +8,9 @@
 <title>Refund Dashboard SAPA BALARAJA</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="style.css">
 
@@ -21,7 +20,7 @@
 
 <body>
 
-<!-- SIDEBAR -->
+<!-- ================= SIDEBAR ================= -->
 
 <div class="sidebar">
 
@@ -34,22 +33,18 @@
 </div>
 
 <button id="btnDashboard" class="menu active">
-
 📊 Dashboard
-
 </button>
 
 <button id="btnData" class="menu">
-
 📋 Data Pending
-
 </button>
 
 </div>
 
-<!-- MAIN -->
+<!-- ================= CONTENT ================= -->
 
-<div class="main">
+<div class="content">
 
 <header>
 
@@ -59,7 +54,7 @@
 
 </header>
 
-<!-- DASHBOARD -->
+<!-- ================= DASHBOARD ================= -->
 
 <section id="dashboardPage">
 
@@ -123,7 +118,7 @@
 
 </div>
 
-<div class="chart-box">
+<div class="chart-card">
 
 <h3>Grafik Pending vs Refund</h3>
 
@@ -133,17 +128,17 @@
 
 </section>
 
-<!-- DATA -->
+<!-- ================= DATA ================= -->
 
 <section id="dataPage" style="display:none;">
 
-<div class="table-box">
+<div class="table-card">
 
 <h2>Data Pending Refund</h2>
 
 <div class="filter-box">
 
-<div>
+<div class="filter-item">
 
 <label>Dari Tanggal</label>
 
@@ -151,7 +146,7 @@
 
 </div>
 
-<div>
+<div class="filter-item">
 
 <label>Sampai Tanggal</label>
 
@@ -159,7 +154,7 @@
 
 </div>
 
-<div>
+<div class="filter-item">
 
 <label>Toko</label>
 
@@ -171,7 +166,7 @@
 
 </div>
 
-<div>
+<div class="filter-item">
 
 <label>&nbsp;</label>
 
@@ -188,9 +183,9 @@ Filter
 <input
 type="text"
 id="searchInput"
-placeholder="Cari No Order / Customer / Toko">
+placeholder="🔍 Cari No Order, Customer atau Toko">
 
-<div class="table-responsive">
+<div class="table-wrapper">
 
 <table id="dataTable">
 
@@ -200,13 +195,13 @@ placeholder="Cari No Order / Customer / Toko">
 
 <th>Tanggal</th>
 
-<th>Kode</th>
+<th>Kode Toko</th>
 
 <th>Nama Toko</th>
 
 <th>No Order</th>
 
-<th>Customer</th>
+<th>Nama Customer</th>
 
 <th>Qty</th>
 
