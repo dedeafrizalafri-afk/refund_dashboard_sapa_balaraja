@@ -2,7 +2,8 @@
 // REFUND DASHBOARD SAPA BALARAJA
 // ======================================
 
-const SHEET_URL = https://docs.google.com/spreadsheets/d/e/2PACX-1vS169Srv3rdFs6JAfzotcL9qklXPh0AKi6jt-2ROYDlYSKtdDJy2KQ0znqTfHF_IVCtLJjyXXdbnLbm/pub?gid=463015523&single=true&output=csv
+const SHEET_URL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vS169Srv3rdFs6JAfzotcL9qklXPh0AKi6jt-2ROYDlYSKtdDJy2KQ0znqTfHF_IVCtLJjyXXdbnLbm/pub?gid=463015523&single=true&output=csv";
 
 
 let allData = [];
@@ -10,7 +11,25 @@ let chart = null;
 
 
 // ======================================
-// LOAD DATA GOOGLE SHEET
+// PARSE CSV AMAN
+// ======================================
+
+function parseCSV(text){
+
+    return text
+    .trim()
+    .split(/\r?\n/)
+    .map(row =>
+        row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
+        .map(x => x.replace(/^"|"$/g,"").trim())
+    );
+
+}
+
+
+
+// ======================================
+// LOAD DATA
 // ======================================
 
 async function loadData(){
@@ -21,22 +40,27 @@ try{
 const response = await fetch(SHEET_URL);
 
 
+if(!response.ok){
+
+throw new Error("Google Sheet tidak bisa dibuka");
+
+}
+
+
+
 const csv = await response.text();
 
 
-console.log("CSV DATA:",csv);
+console.log("CSV:",csv.substring(0,300));
 
 
 
-const rows = csv
-.trim()
-.split("\n");
+const rows = parseCSV(csv);
 
 
 
 const headers = rows[0]
-.split(",")
-.map(x=>x.trim().toUpperCase());
+.map(x=>x.toUpperCase());
 
 
 
@@ -44,15 +68,24 @@ console.log("HEADER:",headers);
 
 
 
-// CARI KOLOM
 
-const idxTanggal = headers.indexOf("TGL ORDER");
-const idxKode = headers.indexOf("KODE TOKO");
-const idxNama = headers.indexOf("NAMA TOKO");
-const idxOrder = headers.indexOf("NO ORDER");
-const idxQty = headers.indexOf("QTY");
-const idxCustomer = headers.indexOf("NAMA CUSTOMER");
-const idxStatus = headers.indexOf("PENANGANAN");
+
+function getIndex(name){
+
+return headers.indexOf(name);
+
+}
+
+
+
+
+const idxTanggal = getIndex("TGL ORDER");
+const idxKode = getIndex("KODE TOKO");
+const idxNama = getIndex("NAMA TOKO");
+const idxOrder = getIndex("NO ORDER");
+const idxQty = getIndex("QTY");
+const idxCustomer = getIndex("NAMA CUSTOMER");
+const idxStatus = getIndex("PENANGANAN");
 
 
 
@@ -71,7 +104,6 @@ status:idxStatus
 
 
 
-
 allData=[];
 
 
@@ -79,7 +111,7 @@ allData=[];
 for(let i=1;i<rows.length;i++){
 
 
-const col = rows[i].split(",");
+let col = rows[i];
 
 
 
@@ -143,7 +175,6 @@ alert("Gagal mengambil data Google Sheet");
 // DROPDOWN TOKO
 // ======================================
 
-
 function isiFilterToko(){
 
 
@@ -161,27 +192,25 @@ Semua Toko
 
 
 
-const toko = [
-...new Set(
-allData.map(x=>x.kode)
-)
-];
+let toko = 
+[...new Set(allData.map(x=>x.kode))]
+.filter(x=>x);
 
 
 
 toko.forEach(t=>{
 
 
-let option =
+let opt =
 document.createElement("option");
 
 
-option.value=t;
+opt.value=t;
 
-option.textContent=t;
+opt.textContent=t;
 
 
-select.appendChild(option);
+select.appendChild(opt);
 
 
 });
@@ -194,9 +223,8 @@ select.appendChild(option);
 
 
 // ======================================
-// FILTER & DASHBOARD
+// FILTER DATA
 // ======================================
-
 
 function filterData(){
 
@@ -205,7 +233,7 @@ let data=[...allData];
 
 
 
-const toko =
+let toko =
 document.getElementById("filterToko").value;
 
 
@@ -221,11 +249,10 @@ data.filter(x=>x.kode===toko);
 
 
 
-const totalPending =
+let pending =
 data.filter(x=>
 
-x.status
-.toUpperCase()
+x.status.toUpperCase()
 .includes("PENDING")
 
 ).length;
@@ -234,11 +261,10 @@ x.status
 
 
 
-const totalRefund =
+let refund =
 data.filter(x=>
 
-x.status
-.toUpperCase()
+x.status.toUpperCase()
 .includes("REFUND")
 
 ).length;
@@ -247,7 +273,7 @@ x.status
 
 
 
-const totalQty =
+let qty =
 data.reduce(
 (a,b)=>a+b.qty,
 0
@@ -257,7 +283,7 @@ data.reduce(
 
 
 
-const totalToko =
+let totalToko =
 new Set(
 data.map(x=>x.kode)
 ).size;
@@ -267,21 +293,19 @@ data.map(x=>x.kode)
 
 
 document.getElementById("pending").innerHTML =
-totalPending;
+pending;
 
 
 document.getElementById("refund").innerHTML =
-totalRefund;
+refund;
 
 
 document.getElementById("qty").innerHTML =
-totalQty;
+qty;
 
 
 document.getElementById("toko").innerHTML =
 totalToko;
-
-
 
 
 
@@ -293,12 +317,9 @@ new Date().toLocaleString("id-ID");
 
 
 
-// ======================================
-// TABEL
-// ======================================
+// TABLE
 
-
-const tbody =
+let tbody =
 document.querySelector("#dataTable tbody");
 
 
@@ -309,8 +330,7 @@ tbody.innerHTML="";
 data.forEach(item=>{
 
 
-tbody.innerHTML +=
-`
+tbody.innerHTML += `
 
 <tr>
 
@@ -333,19 +353,17 @@ tbody.innerHTML +=
 `;
 
 
+
 });
 
 
 
 
 
-
-// ======================================
-// GRAFIK
-// ======================================
+// CHART
 
 
-const ctx =
+let ctx =
 document.getElementById("myChart");
 
 
@@ -358,10 +376,10 @@ chart.destroy();
 
 
 
-chart = new Chart(ctx,{
+chart =
+new Chart(ctx,{
 
 type:"bar",
-
 
 data:{
 
@@ -380,8 +398,8 @@ label:"Jumlah",
 
 data:[
 
-totalPending,
-totalRefund
+pending,
+refund
 
 ]
 
@@ -418,7 +436,7 @@ document
 .addEventListener("keyup",function(){
 
 
-let keyword =
+let key =
 this.value.toLowerCase();
 
 
@@ -429,16 +447,14 @@ document
 
 
 row.style.display =
+
 row.innerText
 .toLowerCase()
-.includes(keyword)
+.includes(key)
 
 ?
-
 ""
-
 :
-
 "none";
 
 
@@ -451,11 +467,9 @@ row.innerText
 
 
 
-
 // ======================================
 // EVENT
 // ======================================
-
 
 document
 .getElementById("btnFilter")
@@ -473,25 +487,19 @@ filterData;
 
 
 
-
-
 // ======================================
 // MENU
 // ======================================
-
 
 document
 .getElementById("btnDashboard")
 .onclick=function(){
 
-
 document.getElementById("dashboardPage").style.display="block";
 
 document.getElementById("dataPage").style.display="none";
 
-
 };
-
 
 
 
@@ -499,14 +507,11 @@ document
 .getElementById("btnData")
 .onclick=function(){
 
-
 document.getElementById("dashboardPage").style.display="none";
 
 document.getElementById("dataPage").style.display="block";
 
-
 };
-
 
 
 
@@ -514,6 +519,5 @@ document.getElementById("dataPage").style.display="block";
 // ======================================
 // START
 // ======================================
-
 
 loadData();
