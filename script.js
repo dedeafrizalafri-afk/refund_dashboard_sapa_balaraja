@@ -1,6 +1,10 @@
 const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS169Srv3rdFs6JAfzotcL9qklXPh0AKi6jt-2ROYDlYSKtdDJy2KQ0znqTfHF_IVCtLJjyXXdbnLbm/pub?gid=463015523&single=true&output=csv";
 
-let chart = null;
+let chart;
+
+loadData();
+
+document.getElementById("btnFilter").addEventListener("click", loadData);
 
 function loadData() {
 
@@ -13,6 +17,9 @@ const headers = rows[0].split(",");
 
 const tanggalIndex = headers.indexOf("TGL ORDER");
 const kodeIndex = headers.indexOf("KODE TOKO");
+const namaIndex = headers.indexOf("NAMA TOKO");
+const orderIndex = headers.indexOf("NO ORDER");
+const customerIndex = headers.indexOf("CUSTOMER");
 const qtyIndex = headers.indexOf("QTY");
 const penangananIndex = headers.indexOf("PENANGANAN");
 
@@ -23,121 +30,148 @@ let totalPending = 0;
 let totalRefund = 0;
 let totalQty = 0;
 
-const daftarToko = new Set();
+const toko = new Set();
+
+const tbody = document.querySelector("#dataTable tbody");
+tbody.innerHTML = "";
+
+const select = document.getElementById("filterToko");
+
+select.innerHTML = '<option value="">Semua Toko</option>';
 
 for(let i=1;i<rows.length;i++){
 
 const cols = rows[i].split(",");
 
 if(cols[kodeIndex]){
-daftarToko.add(cols[kodeIndex].trim());
-}
-
-// Filter tanggal
-if(filterTanggal){
-
-let tgl = cols[tanggalIndex].trim();
-
-if(tgl){
-let p = tgl.split("-");
-
-if(p.length==3){
-
-let bulan={
-jan:"01",feb:"02",mar:"03",apr:"04",may:"05",jun:"06",
-jul:"07",aug:"08",sep:"09",oct:"10",nov:"11",dec:"12"
-};
-
-let tanggal = p[0].padStart(2,"0");
-let bulanAngka = bulan[p[1].toLowerCase()] || "01";
-let tahun = p[2];
-
-let hasil = `${tahun}-${bulanAngka}-${tanggal}`;
-
-if(hasil!=filterTanggal){
-continue;
+toko.add(cols[kodeIndex].trim());
 }
 
 }
 
-}
+Array.from(toko).sort().forEach(kode=>{
 
-}
-
-// Filter toko
-if(filterToko!=""){
-if(cols[kodeIndex].trim()!=filterToko){
-continue;
-}
-}
-
-totalPending++;
-
-totalQty += Number(cols[qtyIndex]) || 0;
-
-if(cols[penangananIndex] &&
-cols[penangananIndex].trim().toUpperCase()=="REFUND"){
-totalRefund++;
-}
-
-}
-
-// isi dropdown toko
-const select=document.getElementById("filterToko");
-
-if(select.options.length==1){
-
-Array.from(daftarToko)
-.sort()
-.forEach(kode=>{
-
-let option=document.createElement("option");
+const option=document.createElement("option");
 option.value=kode;
 option.textContent=kode;
+
+if(kode===filterToko){
+option.selected=true;
+}
 
 select.appendChild(option);
 
 });
+
+const tokoHitung=new Set();
+
+for(let i=1;i<rows.length;i++){
+
+const cols=rows[i].split(",");
+
+if(filterTanggal){
+
+const tgl=new Date(cols[tanggalIndex]);
+const tglData=tgl.toISOString().split("T")[0];
+
+if(tglData!==filterTanggal){
+continue;
+}
+
+}
+
+if(filterToko && cols[kodeIndex].trim()!=filterToko){
+continue;
+}
+
+totalPending++;
+
+tokoHitung.add(cols[kodeIndex]);
+
+totalQty+=Number(cols[qtyIndex])||0;
+
+if(cols[penangananIndex].trim().toUpperCase()=="REFUND"){
+totalRefund++;
+}
+
+const tr=document.createElement("tr");
+
+tr.innerHTML=`
+<td>${cols[tanggalIndex]}</td>
+<td>${cols[kodeIndex]}</td>
+<td>${cols[namaIndex]}</td>
+<td>${cols[orderIndex]}</td>
+<td>${cols[customerIndex]}</td>
+<td>${cols[qtyIndex]}</td>
+<td>${cols[penangananIndex]}</td>
+`;
+
+tbody.appendChild(tr);
 
 }
 
 document.getElementById("pending").textContent=totalPending;
 document.getElementById("refund").textContent=totalRefund;
 document.getElementById("qty").textContent=totalQty;
-document.getElementById("toko").textContent=daftarToko.size;
-
-const ctx=document.getElementById("myChart");
+document.getElementById("toko").textContent=tokoHitung.size;
 
 if(chart){
 chart.destroy();
 }
 
-chart=new Chart(ctx,{
+chart=new Chart(document.getElementById("myChart"),{
+
 type:"bar",
+
 data:{
 labels:["Pending","Refund"],
+
 datasets:[{
+
 label:"Jumlah",
+
 data:[totalPending,totalRefund],
+
 backgroundColor:[
 "#f59e0b",
 "#10b981"
 ]
+
 }]
+
 },
+
 options:{
 responsive:true,
+
 plugins:{
 legend:{
 display:false
 }
 }
+
 }
+
 });
 
 });
+
 }
 
-loadData();
+document.getElementById("searchInput").addEventListener("keyup",function(){
 
-document.getElementById("btnFilter").addEventListener("click",loadData);
+const keyword=this.value.toLowerCase();
+
+const rows=document.querySelectorAll("#dataTable tbody tr");
+
+rows.forEach(function(row){
+
+if(row.innerText.toLowerCase().includes(keyword)){
+row.style.display="";
+}else{
+row.style.display="none";
+}
+
+});
+
+});
