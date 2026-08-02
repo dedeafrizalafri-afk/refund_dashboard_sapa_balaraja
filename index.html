@@ -229,3 +229,250 @@ placeholder="🔍 Cari No Order, Customer atau Toko">
 
 </body>
 </html>
+<!-- Total Qty -->
+
+<div class="card">
+
+<div class="icon">
+
+📊
+
+</div>
+
+<div>
+
+<span>Total Qty</span>
+
+<h2 id="qty">
+
+0
+
+</h2>
+
+</div>
+
+</div>
+
+<!-- Total Toko -->
+
+<div class="card">
+
+<div class="icon">
+
+🏪
+
+</div>
+
+<div>
+
+<span>Total Toko</span>
+
+<h2 id="toko">
+
+0
+
+</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ================= GRAFIK ================= -->
+
+<div class="chart-card">
+
+<h3>
+
+Grafik Pending • Refund • Kirim Ulang
+
+</h3>
+
+<canvas id="myChart"></canvas>
+
+</div>
+
+</section>
+
+<!-- ================= DATA ================= -->
+
+<section
+id="dataPage"
+style="display:none;">
+
+<div class="table-card">
+
+<h2>
+
+Data Pending Refund
+
+</h2>
+
+<!-- ================= FILTER ================= -->
+
+<div class="filter-box">
+
+<!-- Dari -->
+
+<div class="filter-item">
+
+<label>
+
+Dari Tanggal
+
+</label>
+
+<input
+type="date"
+id="filterDari">
+
+</div>
+
+<!-- Sampai -->
+
+<div class="filter-item">
+
+<label>
+
+Sampai Tanggal
+
+</label>
+
+<input
+type="date"
+id="filterSampai">
+
+</div>
+
+<!-- Toko -->
+
+<div class="filter-item">
+
+<label>
+
+Kode Toko
+
+</label>
+
+<select id="filterToko">
+
+<option value="">
+
+Semua Toko
+
+</option>
+
+</select>
+
+</div>
+
+<!-- Status -->
+
+<div class="filter-item">
+
+<label>
+
+Status
+
+</label>
+
+<select id="filterStatus">
+
+<option value="">
+
+Semua Status
+
+</option>
+
+<option value="PENDING">
+
+Pending
+
+</option>
+
+<option value="REFUND">
+
+Refund
+
+</option>
+
+<option value="KIRIM ULANG">
+
+Kirim Ulang
+
+</option>
+
+</select>
+
+</div>
+
+<!-- Tombol -->
+
+<div class="filter-item">
+
+<label>&nbsp;</label>
+
+<button id="btnFilter">
+
+Filter
+
+</button>
+
+</div>
+
+</div>
+<!-- ================= SEARCH ================= -->
+
+<input
+type="text"
+id="searchInput"
+placeholder="🔍 Cari No Order, Customer atau Toko">
+
+<!-- ================= TABEL ================= -->
+
+<div class="table-wrapper">
+
+<table id="dataTable">
+
+<thead>
+
+<tr>
+
+<th>Tanggal</th>
+
+<th>Kode Toko</th>
+
+<th>Nama Toko</th>
+
+<th>No Order</th>
+
+<th>Nama Customer</th>
+
+<th>Qty</th>
+
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
