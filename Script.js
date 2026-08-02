@@ -91,3 +91,259 @@ item.Qty || item.qty || 0
 toko.add(
 item["Kode Toko"] ||
 item.kode
+// =============================
+// GRAFIK
+// =============================
+
+if(chart){
+    chart.destroy();
+}
+
+
+chart = new Chart(
+document.getElementById("myChart"),
+{
+
+type:"bar",
+
+data:{
+
+labels:[
+"Pending",
+"Refund",
+"Kirim Ulang"
+],
+
+
+datasets:[{
+
+label:"Jumlah",
+
+data:[
+
+pending,
+
+refund,
+
+data.filter(x =>
+String(x.Status || x.status || "")
+.toUpperCase()=="KIRIM ULANG"
+).length
+
+]
+
+}]
+
+},
+
+
+options:{
+
+responsive:true
+
+}
+
+}
+
+);
+
+
+
+}
+
+
+// =============================
+// TAMPIL DATA TABEL
+// =============================
+
+function showTable(data){
+
+
+const tbody =
+document.querySelector("#dataTable tbody");
+
+
+tbody.innerHTML="";
+
+
+
+data.forEach(item=>{
+
+
+let tr=document.createElement("tr");
+
+
+
+tr.innerHTML=`
+
+<td>${item.Tanggal || item.tanggal || "-"}</td>
+
+<td>${item["Kode Toko"] || item.kode_toko || "-"}</td>
+
+<td>${item["Nama Toko"] || item.nama_toko || "-"}</td>
+
+<td>${item["No Order"] || item.no_order || "-"}</td>
+
+<td>${item["Nama Customer"] || item.customer || "-"}</td>
+
+<td>${item.Qty || item.qty || 0}</td>
+
+<td>${item.Status || item.status || "-"}</td>
+
+`;
+
+
+
+tbody.appendChild(tr);
+
+
+});
+
+
+}
+
+
+
+// =============================
+// UPDATE WAKTU
+// =============================
+
+function setLastUpdate(){
+
+document.getElementById("lastUpdate").innerHTML =
+
+"Last Update : " +
+
+new Date().toLocaleString("id-ID");
+
+
+}
+
+
+
+// =============================
+// SEARCH
+// =============================
+
+document
+.getElementById("searchInput")
+.addEventListener("keyup",function(){
+
+
+let keyword=this.value.toLowerCase();
+
+
+
+let hasil = allData.filter(item=>{
+
+
+return JSON.stringify(item)
+.toLowerCase()
+.includes(keyword);
+
+
+});
+
+
+
+showTable(hasil);
+
+
+});
+
+
+
+
+// =============================
+// PINDAH HALAMAN
+// =============================
+
+document
+.getElementById("btnDashboard")
+.onclick=function(){
+
+
+document.getElementById("dashboardPage")
+.style.display="block";
+
+
+document.getElementById("dataPage")
+.style.display="none";
+
+
+};
+
+
+
+document
+.getElementById("btnData")
+.onclick=function(){
+
+
+document.getElementById("dashboardPage")
+.style.display="none";
+
+
+document.getElementById("dataPage")
+.style.display="block";
+
+
+};
+
+
+
+
+// =============================
+// FILTER
+// =============================
+
+document
+.getElementById("btnFilter")
+.onclick=function(){
+
+
+let toko =
+document.getElementById("filterToko").value;
+
+
+let status =
+document.getElementById("filterStatus").value;
+
+
+
+let hasil = allData.filter(item=>{
+
+
+let cocokToko =
+!toko ||
+(item["Kode Toko"] || item.kode_toko)==toko;
+
+
+
+let cocokStatus =
+!status ||
+String(item.Status || item.status)
+.toUpperCase()==status;
+
+
+
+return cocokToko && cocokStatus;
+
+
+});
+
+
+
+showTable(hasil);
+
+
+};
+
+
+
+
+// =============================
+// JALANKAN SAAT BUKA
+// =============================
+
+loadData();
