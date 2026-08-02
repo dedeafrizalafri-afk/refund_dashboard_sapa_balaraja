@@ -8,6 +8,7 @@ fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vS169Srv3rdFs6JAfzotcL9qk
     const kodeIndex = headers.indexOf("KODE TOKO");
     const qtyIndex = headers.indexOf("QTY");
     const penangananIndex = headers.indexOf("PENANGANAN");
+    const tanggalIndex = headers.indexOf("TGL ORDER");
 
     let totalPending = rows.length - 1;
     let totalRefund = 0;
@@ -16,6 +17,16 @@ fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vS169Srv3rdFs6JAfzotcL9qk
 
     for (let i = 1; i < rows.length; i++) {
       const cols = rows[i].split(",");
+      const filterTanggal = document.getElementById("filterTanggal").value;
+
+if (filterTanggal) {
+  const tgl = new Date(cols[tanggalIndex]);
+  const tglData = tgl.toISOString().split("T")[0];
+
+  if (tglData !== filterTanggal) {
+    continue;
+  }
+}
 
       if (cols[kodeIndex]) {
         toko.add(cols[kodeIndex].trim());
