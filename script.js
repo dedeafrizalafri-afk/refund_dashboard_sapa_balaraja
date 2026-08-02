@@ -1,38 +1,37 @@
-fetch("data.csv")
-  .then(response => response.text())
-  .then(csv => {
-    const rows = csv.trim().split("\n");
+fetch("pendingan.csv")
+  .then(res => res.text())
+  .then(text => {
+    const rows = text.trim().split("\n");
 
-    // Buang baris header
-    rows.shift();
+    // Header
+    const headers = rows[0].split(",");
 
-    let pending = rows.length;
-    let refund = 0;
-    let qty = 0;
+    const kodeIndex = headers.indexOf("KODE TOKO");
+    const qtyIndex = headers.indexOf("QTY");
+    const penangananIndex = headers.indexOf("PENANGANAN");
+
+    let totalPending = rows.length - 1;
+    let totalRefund = 0;
+    let totalQty = 0;
     const toko = new Set();
 
-    rows.forEach(row => {
-      const cols = row.split(",");
+    for (let i = 1; i < rows.length; i++) {
+      const cols = rows[i].split(",");
 
-      // Sesuaikan indeks kolom jika urutannya berbeda
-      const kodeToko = cols[0]?.trim();
-      const qtyValue = parseInt(cols[2]) || 0;
-      const penanganan = cols[3]?.trim().toUpperCase();
-
-      qty += qtyValue;
-
-      if (penanganan === "REFUND") {
-        refund++;
+      if (cols[kodeIndex]) {
+        toko.add(cols[kodeIndex].trim());
       }
 
-      if (kodeToko) {
-        toko.add(kodeToko);
-      }
-    });
+      totalQty += Number(cols[qtyIndex]) || 0;
 
-    document.getElementById("pending").textContent = pending;
-    document.getElementById("refund").textContent = refund;
-    document.getElementById("qty").textContent = qty;
+      if (cols[penangananIndex] &&
+          cols[penangananIndex].trim().toUpperCase() === "REFUND") {
+        totalRefund++;
+      }
+    }
+
+    document.getElementById("pending").textContent = totalPending;
+    document.getElementById("refund").textContent = totalRefund;
+    document.getElementById("qty").textContent = totalQty;
     document.getElementById("toko").textContent = toko.size;
-  })
-  .catch(err => console.error(err));
+  });
