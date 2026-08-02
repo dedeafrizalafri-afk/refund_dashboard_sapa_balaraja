@@ -34,4 +34,27 @@ fetch("pendingan.csv")
     document.getElementById("refund").textContent = totalRefund;
     document.getElementById("qty").textContent = totalQty;
     document.getElementById("toko").textContent = toko.size;
-  });
+  });const ctx = document.getElementById('myChart');
+
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ['Pending', 'Refund'],
+    datasets: [{
+      label: 'Jumlah',
+      data: [pending, refund],
+      backgroundColor: [
+        '#f59e0b',
+        '#10b981'
+      ]
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false
+      }
+    }
+  }
+});
