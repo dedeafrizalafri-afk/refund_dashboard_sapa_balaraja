@@ -47,13 +47,23 @@
             <canvas id="myChart"></canvas>
             </div>
 
-         <div class="filter">
-  <input type="date" id="filterTanggal">
+        <div class="filter-box">
+    <div class="filter-item">
+        <label>Tanggal</label>
+        <input type="date" id="filterTanggal">
+    </div>
 
-  <select id="filterToko">
-    <option value="">Semua Toko</option>
-  </select>
-</div>
+    <div class="filter-item">
+        <label>Toko</label>
+        <select id="filterToko">
+            <option value="">Semua Toko</option>
+        </select>
+    </div>
+
+    <div class="filter-item">
+        <button id="btnFilter">Filter</button>
+    </div>
+            
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
